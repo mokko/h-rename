@@ -28,17 +28,21 @@ Andere mögliche Dateinamen
 if __name__ == "__main__":
     #let's simply act on the current directory
     parser = argparse.ArgumentParser(
-    description="rename for Hendryk"
-)
+        description="rename for Hendryk")
+
     parser.add_argument("-d", "--debug", action='store_true', help="Dont rename anything, just say what would be done")
     args = parser.parse_args()
-    
     files = {p.resolve() for p in Path(".").glob("**/*") if p.suffix.lower() in [".jpg", ".tif"]}
     for file in files:
         parent = file.parent
         stem = file.stem
         suffix = file.suffix
-        new_stem = re.sub("[\w\d]_(\d+)$", r"__\1", stem)
+        m = re.search(r"__(\d+)$", stem)
+        if m:
+            #print ("already two")
+            new_stem = stem
+        else:
+            new_stem = re.sub(r"_(\d+)$", r"__\1", stem)
         new_file = parent.joinpath(new_stem+suffix)
         if (args.debug):
             print(f"{file}\n -> {new_file}")
